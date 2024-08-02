@@ -1,0 +1,208 @@
+#!/bin/bash
+
+# Script help
+if [ "$1" == "-h" ] || [ "$1" == "--h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ] || [ "$1" == "/?" ]
+    then
+        echo "Usage: $0 [version] [ipv6/ipv4] [lan0/lan1] [bss/nobss] or simple press Enter"
+        exit 0
+fi
+clear
+
+# Check installed Debian like distro for run OpenWrt imagebuilder
+for arg in build-essential libncurses-dev zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3 python3-distutils curl wget
+do
+    if [[ -z `dpkg -l | grep $arg` ]]
+        then
+            echo $arg" not installed! Try install this package and run script again."
+        exit 1
+    fi
+done
+
+# Imagebuilder download function
+function imagebuilder_download {
+echo "Try download Imagebuilder"
+wget -q -O sha256sums https://downloads.openwrt.org/releases/$version_id/targets/mediatek/mt7622/sha256sums
+wget -q -O openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz https://downloads.openwrt.org/releases/$version_id/targets/mediatek/mt7622/openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz
+if [[ -n `sha256sum -c sha256sums 2>&1 | grep OK` ]]
+    then
+        echo "Imagebuilder for OpenWrt "$version_id" download completed and checked"
+        rm -rf sha256sums
+    else
+        echo "Imagebuilder checksum or downloads not completed"
+        echo "Try run script again!"
+        rm -rf sha256sums openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz
+        exit 1
+fi
+}
+
+# Get current OpenWrt releases
+releases_id=$(curl -s https://downloads.openwrt.org/ | awk -F 'releases/' '{print $2}' | awk -F 'targets' '{printf $1}' | sed s/\\//\\n/g)
+
+# Initial input data for compile
+version_id="$1"
+ip_id="$2"
+lan_id="$3"
+bss_id="$4"
+files_id=""
+service_id=""
+profile_id="xiaomi_redmi-router-ax6s"
+
+# Read packages_id from packages_custom.conf
+index=0
+while read line; do
+    packages_id[$index]="$line"
+    index=$(($index+1))
+done < packages_custom.conf
+
+# Current last version display
+echo -e "Current latest release version: "$(echo $releases_id | awk '{print $1}')
+
+# Check version_id correct
+if [ -z "$1" ]
+    then
+        while [[ -z `echo $releases_id | sed 's/ /\n/g' | grep -x "$version_id"` ]]; do
+            echo "Version openwrt blank or not correct"
+            read -p "Please enter correct OpenWrt version: " version_id
+            clear
+        done
+    else
+        while [[ -z `echo $releases_id | sed 's/ /\n/g' | grep -x "$version_id"` ]]; do
+            echo "Version openwrt blank or not correct"
+            read -p "Please enter correct OpenWrt version: " version_id
+            clear
+        done
+fi
+
+# Check old version Imagebuilder exist or not
+if [ -f repositories.conf ]; then
+  echo "Imagebuilder maybe already exist"
+  echo "Check Imagebuilder version"
+    if [[ -n `cat repositories.conf | grep $version_id` ]]
+    then
+        echo "Imagebuilder maybe already have OpenWrt version "$version_id
+        read -r -p "Do you need reinstall this version? [Y/n]" response
+        response=${response,,}
+        if [[ $response =~ ^(y| ) ]] || [[ -z $response ]]; then
+            imagebuilder_download
+            echo "Try reinstall Imagebuilder version "$version_id
+            rm -rf bin dl staging_dir build_dir key-build key-build.pub key-build.ucert key-build.ucert.revoke keys include packages/Packages packages/Packages.gz packages/Packages.sig packages/README.md scripts target .config .packageinfo .targetinfo Makefile repositories.conf rules.mk .profiles.mk tmp
+            tar -xf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz  --strip-components 1
+            rm -rf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz
+        fi
+  #      exit 1
+    else
+        echo "Imagebuilder maybe already have different OpenWrt version"
+        read -r -p "Do you need remove different version and install new? [Y/n]" response
+        response=${response,,}
+        if [[ $response =~ ^(y| ) ]] || [[ -z $response ]]; then
+            imagebuilder_download
+            echo "Try remove old version Imagebuilder and install version "$version_id
+            rm -rf bin dl staging_dir build_dir key-build key-build.pub key-build.ucert key-build.ucert.revoke keys include packages/Packages packages/Packages.gz packages/Packages.sig packages/README.md scripts target .config .packageinfo .targetinfo Makefile repositories.conf .profiles.mk rules.mk tmp
+            tar -xf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz  --strip-components 1
+            rm -rf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz
+        fi
+        exit 1
+    fi
+else
+    imagebuilder_download
+    echo "Try install Imagebuilder version "$version_id
+    tar -xf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz  --strip-components 1
+    rm -rf openwrt-imagebuilder-$version_id-mediatek-mt7622.Linux-x86_64.tar.xz
+fi
+
+# Check ip_id correct
+if [ -z "$2" ]
+    then
+        while [[ "$ip_id" != "ipv4" && "$ip_id" != "ipv6" ]]; do
+            echo "Ip version is blank or not correct"
+            read -p "Please enter correct ip version ipv6 or ipv4: " ip_id
+            clear
+        done
+    else
+        while [[ "$ip_id" != "ipv4" && "$ip_id" != "ipv6" ]]; do
+            echo "Ip version is blank or not correct"
+            read -p "Please enter correct ip version ipv6 or ipv4: " ip_id
+            clear
+        done
+fi
+
+# Check lan_id correct
+if [ -z "$3" ]
+    then
+        while [[ "$lan_id" != "lan0" && "$lan_id" != "lan1" ]]; do
+            echo "Lan version is blank or not correct"
+            read -p "Please enter correct lan version lan0 or lan1: " lan_id
+            clear
+        done
+    else
+        while [[ "$lan_id" != "lan0" && "$lan_id" != "lan1" ]]; do
+            echo "Lan version is blank or not correct"
+            read -p "Please enter correct lan version lan0 or lan1: " lan_id
+            clear
+        done
+fi
+
+# Check bss_id correct
+if [ -z "$4" ]
+    then
+        while [[ "$bss_id" != "bss" && "$bss_id" != "nobss" ]]; do
+            echo "Bss version is blank or not correct"
+            read -p "Please enter correct need bss or nobss: " bss_id
+            clear
+        done
+    else
+        while [[ "$bss_id" != "bss" && "$bss_id" != "nobss" ]]; do
+            echo "Lan version is blank or not correct"
+            read -p "Please enter correct need bss or nobss: " bss_id
+            clear
+        done
+fi
+
+if [ "$ip_id" == "ipv4" ]
+    then
+        if [ "$lan_id" == "lan0" ]
+            then
+                if [ "$bss_id" == "bss" ]
+                    then
+                        files_id="files/ipv4/lan0/bss"
+                        service_id="odhcpd"
+                    else
+                        files_id="files/ipv4/lan0/nobss"
+                        service_id="odhcpd usteer bsskick"
+                fi
+            else
+                if [ "$bss_id" == "bss" ]
+                    then
+                        files_id="files/ipv4/lan1/bss"
+                        service_id="odhcpd"
+                    else
+                        files_id="files/ipv4/lan1/nobss"
+                        service_id="odhcpd usteer bsskick"
+                fi
+        fi
+    else
+        if [ "$lan_id" == "lan0" ]
+            then
+                if [ "$bss_id" == "bss" ]
+                    then
+                        files_id="files/ipv6/lan0/bss"
+                        service_id="noipv6"
+                    else
+                        files_id="files/ipv6/lan0/nobss"
+                        service_id="noipv6 usteer bsskick"
+                fi
+            else
+                if [ "$bss_id" == "bss" ]
+                    then
+                        files_id="files/ipv6/lan1/bss"
+                        service_id="noipv6"
+                    else
+                        files_id="files/ipv6/lan1/nobss"
+                        service_id="noipv6 usteer bsskick"
+                fi
+        fi
+fi
+clear
+echo "Start to compile "$profile_id" firmware"
+sleep 2
+make image PROFILE="$profile_id" PACKAGES="${packages_id[*]}" FILES="$files_id" DISABLED_SERVICES="$service_id"
