@@ -1,0 +1,15 @@
+uci -q batch << EOI
+set network.lan.ipaddr='192.168.1.1'
+set dhcp.lan.dhcpv6='disabled'
+set dhcp.wan.dhcpv6='disabled'
+set network.lan.ipv6='0'
+set network.wan.ipv6='0'
+set network.lan.delegate='0'
+set network.wan.delegate='0'
+delete dhcp.lan.dhcpv6
+delete dhcp.lan.ra
+delete dhcp.wan.dhcpv6
+delete dhcp.wan.ra
+delete network.globals.ula_prefix
+delete network.wan6
+EOI

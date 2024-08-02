@@ -1,0 +1,22 @@
+{
+  "luci-app-bsskick": {
+    "description": "Grant UCI access to LuCI app Bsskick",
+    "read": {
+      "ubus": {
+        "uci": [ "get" ],
+        "bsskick": [ "remote_info","remote_hosts", "local_info", "get_clients"],
+        "luci-rpc": [ "getHostHints" ],
+        "network.rrdns": [ "lookup" ]
+      },
+      "uci": [
+        "bsskick"
+      ]
+    },
+    "write": {
+      "ubus": {
+        "uci": [ "set", "commit"  ]
+      },
+      "uci": [ "bsskick" ]
+    }
+  }
+}

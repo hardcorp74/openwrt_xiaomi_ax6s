@@ -1,0 +1,10 @@
+{
+  "admin/network/bsskick": {
+    "title": "Bsskick",
+    "order": 85,
+    "action": {
+      "type": "view",
+      "path": "bsskick/bsskick"
+    }
+  }
+}

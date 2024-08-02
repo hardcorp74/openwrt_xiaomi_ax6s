@@ -1,0 +1,25 @@
+
+config usteer
+	option network 'lan'
+	option syslog '1'
+	option local_mode '0'
+	option ipv6 '0'
+	option debug_level '2'
+	list ssid_list 'OpenWrt'
+	option sta_block_timeout 6000
+	option local_sta_timeout 12000
+	option local_sta_update 1000
+	option max_retry_band 3
+	option seen_policy_timeout 6000
+	option band_steering_threshold 1
+	option assoc_steering 1
+	option min_connect_snr -100
+	option min_snr -100
+	option roam_scan_interval 3000
+	option roam_trigger_interval 12000
+	option initial_connect_delay 0
+	option band_steering_min_snr -100
+	option band_steering_interval 6000
+	option link_measurement_interval 3000
+	option measurement_report_timeout 12000
+	option steer_reject_timeout 6000
