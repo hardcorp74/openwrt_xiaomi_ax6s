@@ -1,3 +1,2 @@
 
 config bsskick 'main'
-	option time '30'

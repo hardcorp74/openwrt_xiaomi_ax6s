@@ -9,10 +9,10 @@ CONFIGURATION=bsskick
 
 start_service() {
         config_load "${CONFIGURATION}"
-        local time
-        config_get time main time
+        local mac
+        config_get mac main mac
         procd_open_instance
-        procd_set_param command "$PROG" "$time"
+        procd_set_param command "$PROG" "$mac"
         procd_set_param file /etc/config/bsskick
         procd_close_instance
 }
