@@ -123,3 +123,10 @@ config rule
 	option dest_port '500'
 	option proto 'udp'
 	option target 'ACCEPT'
+
+config rule 'Allow_OpenVPN'
+	option target 'ACCEPT'
+	option src '*'
+	option proto 'udp'
+	option dest_port '1194'
+	option name 'Allow_OpenVPN'
