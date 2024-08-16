@@ -124,9 +124,22 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
-config rule 'Allow_OpenVPN'
+config rule
+	option name 'Allow-OpenVPN'
 	option target 'ACCEPT'
 	option src '*'
 	option proto 'udp'
 	option dest_port '1194'
-	option name 'Allow_OpenVPN'
+
+config rule
+	option name 'Allow-IGMP'
+	option src 'wan'
+	option proto 'igmp'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-IPTV'
+	option src 'wan'
+	option proto 'all'
+	option dest_ip '224.0.0.0/4'
+	option target 'ACCEPT'

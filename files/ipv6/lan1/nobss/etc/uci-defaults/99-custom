@@ -1,3 +1,4 @@
 uci -q batch << EOI
 set network.lan.ipaddr='192.168.1.1'
+set network.@device[0].igmp_snooping='1'
 EOI

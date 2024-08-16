@@ -6,6 +6,7 @@ set network.lan.ipv6='0'
 set network.wan.ipv6='0'
 set network.lan.delegate='0'
 set network.wan.delegate='0'
+set network.@device[0].igmp_snooping='1'
 delete dhcp.lan.dhcpv6
 delete dhcp.lan.ra
 delete dhcp.wan.dhcpv6
