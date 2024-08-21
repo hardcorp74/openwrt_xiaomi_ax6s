@@ -1,0 +1,4 @@
+
+config cifs
+	option enabled '0'
+	option workgroup 'WORKGROUP'

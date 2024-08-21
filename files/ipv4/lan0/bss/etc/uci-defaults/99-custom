@@ -13,4 +13,8 @@ delete dhcp.wan.dhcpv6
 delete dhcp.wan.ra
 delete network.globals.ula_prefix
 delete network.wan6
+delete ucitrack.@cifs[-1]
+add ucitrack cifs
+set ucitrack.@cifs[-1].init=cifs
+commit ucitrack
 EOI
