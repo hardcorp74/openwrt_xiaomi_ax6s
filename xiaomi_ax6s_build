@@ -165,19 +165,19 @@ if [ "$ip_id" == "ipv4" ]
                 if [ "$bss_id" == "bss" ]
                     then
                         files_id="files/ipv4/lan0/bss"
-                        service_id="odhcpd"
+                        service_id="odhcpd igmpproxy"
                     else
                         files_id="files/ipv4/lan0/nobss"
-                        service_id="odhcpd usteer bsskick"
+                        service_id="odhcpd usteer bsskick igmpproxy"
                 fi
             else
                 if [ "$bss_id" == "bss" ]
                     then
                         files_id="files/ipv4/lan1/bss"
-                        service_id="odhcpd"
+                        service_id="odhcpd igmpproxy"
                     else
                         files_id="files/ipv4/lan1/nobss"
-                        service_id="odhcpd usteer bsskick"
+                        service_id="odhcpd usteer bsskick igmpproxy"
                 fi
         fi
     else
@@ -186,19 +186,19 @@ if [ "$ip_id" == "ipv4" ]
                 if [ "$bss_id" == "bss" ]
                     then
                         files_id="files/ipv6/lan0/bss"
-                        service_id="noipv6"
+                        service_id="noipv6 igmpproxy"
                     else
                         files_id="files/ipv6/lan0/nobss"
-                        service_id="noipv6 usteer bsskick"
+                        service_id="noipv6 usteer bsskick igmpproxy"
                 fi
             else
                 if [ "$bss_id" == "bss" ]
                     then
                         files_id="files/ipv6/lan1/bss"
-                        service_id="noipv6"
+                        service_id="noipv6 igmpproxy"
                     else
                         files_id="files/ipv6/lan1/nobss"
-                        service_id="noipv6 usteer bsskick"
+                        service_id="noipv6 usteer bsskick igmpproxy"
                 fi
         fi
 fi
