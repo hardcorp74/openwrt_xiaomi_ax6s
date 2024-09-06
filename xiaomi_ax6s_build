@@ -36,7 +36,7 @@ fi
 }
 
 # Get current OpenWrt releases
-releases_id=$(curl -s https://downloads.openwrt.org/ | awk -F 'releases/' '{print $2}' | awk -F 'targets' '{printf $1}' | sed s/\\//\\n/g)
+releases_id=$(curl -s https://openwrt.org/ | grep 'Current stable release' | sed -r -e :a -e 's/<[^>]*>//g;/</N;//ba; /[()&]/d' | awk -F ' ' '{printf $6}')
 
 # Initial input data for compile
 version_id="$1"
